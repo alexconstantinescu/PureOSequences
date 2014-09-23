@@ -1,0 +1,32 @@
+Source "HVectorFromMatrixFunction.coc";
+Source "TruncatedCube.coc";  
+Source "UsualFunctions.coc";
+Source "partitions.coc";--gets the list of all partitions of n<=20. To be used as PART[N,D] = list of all partitions of N of length D.
+
+------------------------
+Codim:=6;    //the codimension
+Rows:=3;     //the number of maximal rows
+CMtype:=Bin(Rows+Codim-2,Codim-1);;   //last entry => codimension 3 And 2 maximal rows OR codimension 2 And 3 maximal rows. no other way To have this. 
+
+
+
+For Codim:=3 To 6 Do
+  For Rows:=1 To 5 Do
+    Print("Doing C=",Codim," R=",Rows);
+    T:=Codim+Rows-1;
+    For J:=T To 26 Do Print(" ",Len(PART[J][T]));EndFor;
+    For LEN:=T To 26 Do
+      VECTS:=[];--the h-vectors
+      MATS:=[];--the matrices 
+      Foreach A In PART[LEN][T] Do
+	M:=[A| I In 1..Rows];
+	Append(MATS,M);
+	Append(VECTS,HV(M));
+      EndForeach;
+      VECTS:=MakeSet(VECTS);
+      If Len(VECTS)=Len(MATS) Then Print(" ",Len(VECTS));
+      Else PrintLn("Counterex	ample found For Codim=",Codim," Rows=",Rows," Length=",LEN);
+      EndIf;
+    EndFor;
+  EndFor;
+EndFor;

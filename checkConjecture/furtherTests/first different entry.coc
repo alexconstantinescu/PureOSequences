@@ -1,0 +1,39 @@
+Source "UsualFunctions.coc";
+Source "HVectorFromMatrixFunction.coc";
+
+For DD:=10 To 10 Do
+  PrintLn("========++++++++++++++++++++++++++++++++==========");
+  D:=DD;
+  N:=Sprint(3);--codim as string
+  T:=Sprint(3);--type
+  DD:=Sprint(DD);--degree of gens
+  Source "PureOSeq_"+N+"_"+T+"_"+DD+".coc";
+  Source "DetVects_"+N+"_"+T+"_"+DD+".coc";
+  LH:=Var("DetVects_"+N+"_"+T+"_"+DD);
+  LP:=Var("PureOSeq_"+N+"_"+T+"_"+DD);
+  --LH1:=MakeSet([A[1]|A In LH]);
+  PrintLn(Len(LH),"   ",Len(LP));
+  PrintLn;
+  Foreach H In LH Do
+    K:=H[1]-1;
+    Repeat K:=K+1; TH:=Last(H[2],K); Until Len([A In LP |Last(A,K)=TH])=0 Or K=Len(H[2]);
+    TH:=Last(H[2],K-1);
+    SAMETAIL:=[A In LP| Last(A,K-1)=TH];
+    CPOINT:=MakeSet([A[D+1-K+1]| A In SAMETAIL]);
+--    PrintLn("--------------");
+--    PrintLn("The h-vect:   ",H[2]);
+--  PrintLn("A candidate:  ",SAMETAIL[1]);
+--    PrintLn("crit pts posi: ",H[2][D+1-K+1],"  <-vs->  ",CPOINT);
+    CP:=H[2][D+1-K+1];
+    MINP:=Min(CPOINT);
+    MAXP:=Max(CPOINT);
+    If CP < MINP Then Print(" !<  ");
+    Elif CP> MAXP Then Print(" > ");
+    Elif CP IsIn CPOINT Then Print(" ERROR! The length of the tail is Not right!");
+    Else PrintLn(" !!inbetween...!!  N=",N," T= ",T," D= ",DD," H = ",H[2]);
+    EndIf
+      
+  EndForeach;
+  PrintLn;
+EndFor;
+
