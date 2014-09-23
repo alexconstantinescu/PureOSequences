@@ -1,0 +1,16 @@
+Source "UsualFunctions.coc";
+
+
+For D:=8 To 12 Do
+  N:=Sprint(4);
+  T:=Sprint(4);
+  D:=Sprint(D);
+  Source "DetVects_"+N+"_"+T+"_"+D+".coc";
+  Source "PureOSeq_"+N+"_"+T+"_"+D+".coc";
+  L1:=Var("DetVects_"+N+"_"+T+"_"+D);
+  L1:=[A[2]| A In L1];
+  L2:=Var("PureOSeq_"+N+"_"+T+"_"+D);
+  Print(Len(L1)," & ");
+  Print(Len(L2)," & ");
+  PrintLn("D = ",D,"   ",  Intersection(L1,L2)," h-vects: ",Len(L1),"   of length: ",Len(L1[1]),"     pure O-seq: ",Len(L2), "  of length: ",Len(L2[1]));
+EndFor;
