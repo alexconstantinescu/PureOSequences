@@ -1,0 +1,6 @@
+DetVects_c_t_s.coc are files containing a list of non-pure O-sequences of length s+1 of the form: [ 1 , c , …. , t ].
+
+The list is called DetVects_c_t_s, and is written in CoCoA syntax:
+
+DetVects_c_t_s:=[…];
+
