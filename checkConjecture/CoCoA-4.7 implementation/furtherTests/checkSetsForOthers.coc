@@ -1,17 +1,19 @@
+///////////////////////////////////////////////////////////////////////////////
+//SEARCHES AMONG MATRICES WITH ALL ROWS EQUAL FOR TWO DIFFERENT ONES WITH THE//
+//SAME H-VECTOR                                                              //
+//TWO DIFFERENT DEGREE MATRICES WITH THE SAME H-VECTOR ARE NOT KNOWN TO US   //
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////implemented by Alexandru Constnatninescu For CoCoA-4.7///
+///////////////////////////////////////////////////////////////////////////////
+
 Source "HVectorFromMatrixFunction.coc";
 Source "TruncatedCube.coc";  
 Source "UsualFunctions.coc";
-Source "partitions.coc";--gets the list of all partitions of n<=20. To be used as PART[N,D] = list of all partitions of N of length D.
+Source "partitions.coc";--gets the list of all partitions of n<=26. To be used as PART[N,D] = list of all partitions of N of length D.
 
 ------------------------
-Codim:=6;    //the codimension
-Rows:=3;     //the number of maximal rows
-CMtype:=Bin(Rows+Codim-2,Codim-1);;   //last entry => codimension 3 And 2 maximal rows OR codimension 2 And 3 maximal rows. no other way To have this. 
-
-
-
 For Codim:=3 To 6 Do
-  For Rows:=1 To 5 Do
+  For Rows:=2 To 5 Do
     Print("Doing C=",Codim," R=",Rows);
     T:=Codim+Rows-1;
     For J:=T To 26 Do Print(" ",Len(PART[J][T]));EndFor;
@@ -30,3 +32,7 @@ For Codim:=3 To 6 Do
     EndFor;
   EndFor;
 EndFor;
+
+/////////////////////
+/////END OF FILE/////
+/////////////////////
