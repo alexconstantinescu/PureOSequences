@@ -1,0 +1,78 @@
+Source "HVectorFromMatrixFunction.coc";
+Source "TruncatedCube.coc";  
+Source "UsualFunctions.coc";
+Source "partitions.coc";//imports the list of all partitions of n<=26. To be used as PART[N,D] = list of all partitions of N of length D.
+--Source "partitions2.coc"; //just For large cases (partitions from 27 To 29)
+--PART:=Concat(PART,PART2); //just For large cases (glues all partitions up To 29)
+Source "permutedPartitions.coc";----gets the list of all permutations of all partitions of n<=26. To be used as PERPART[N,D] = list of all partitions of N of length D.
+---------------------------------------------------------------------------------------------------------------
+For Codim:=9 To 10 Do//
+  For Rows:=2 To (22-2*Codim) Do     //the number of maximal rows
+    CMtype:=Bin(Rows+Codim-2,Codim-1);;   //last entry => codimension 3 And 2 maximal rows OR codimension 2 And 3 maximal rows. no other way To have this. 
+    
+    MINLEFT:=Rows+3*(Codim-1);--the minimum of a_1+...+a_(c+r-1), where the length is given by a_1+....+a_(t+c-1)-c; this minimum comes from the condition of the entries On And above the diagonal To be positive, And the a_(r+1,1) entry To be negative.
+    TP:=Sprint(CMtype);
+    CD:=Sprint(Codim);
+    MINLEN:=MINLEFT-Codim+1;
+---------------------------------------------------------------------------------------------------------------
+    For LEN:=MINLEN To 20 Do     //the length of the h-Vector (h_0,...., h_LEN)
+      PrintLn;
+      PrintLn("================================================================");
+      PrintLn("|Doing: Codim = ",Codim,"    CM type = ",CMtype," of length = ",LEN);
+      PrintLn("================================================================");  
+      Len:=Sprint(LEN);
+      FILE:=OpenOFile("DetVects_"+CD+"_"+TP+"_"+Len+".coc","w");
+      VECTS:=[];--the list of: [N,h-Vector], where Len(h-vect)-N is the position where we conjecture the pure O-sequence fails. i.e., one would only have To check that the last N+1 entries of the H-Vector are Not the N+1 entries of a pure O-seq.;
+      --MATS:=[];
+      For SPLIT:= MINLEFT To (LEN+Codim-1) Do
+	PartL:=[A In PART[SPLIT,Codim+Rows-1]| A[Rows+1]-A[1]>1];--take only those partitions On the left which allow the next row To have a negative first entry And a positive ones above the diagonal.
+	PartR:=Flatten(PERPART[LEN+Codim-SPLIT],1);--thesese are the permuted partitions On the right. 
+	MDiag:=[Flatten(A,1)| A In PartL><PartR];--the entries of the degreematrix which determine the length of the h-Vector
+	PrintLn(SPLIT,"  out of  ",(LEN+Codim-1)," having ",Len(MDiag)," steps");
+	COUNT:=0;
+	Foreach A In MDiag Do
+	  T:=Len(A)-Codim+1;--the number of rows In the matrix
+	  DELTAUP:=[Sum([A[Rows+B*(Codim-1)+Mod(K,Codim-1)]-1| B In 0..Div(K,Codim-1)])| K In 1..(T-Rows)];--the upper bounds For the Deltas: Delta_i = Row_r+i - Row_r.
+	  DELTALOW:=Concat([Max([A[1]+1,A[Codim+Rows-1]-A[Codim+Rows]])],
+			   [A[Codim+Rows-1]-A[Codim+Rows-1+K]| K In 2..(Len(A)-Codim-Rows+1)]);--the lower bounds For the Deltas.
+	  
+	  If Min(ComponentwiseDiff(DELTAUP,DELTALOW))>-1 Then--test that the intervals where the Deltas live are nonempty.      
+	    Foreach D In TruncateCube(T-Rows,Max(DELTAUP)-DELTALOW[1],Max(DELTAUP)-DELTALOW[1]) Do
+	      DD:=NewList(T-Rows);--the Deltas;
+	      DD[1]:=DELTALOW[1]+D[1];
+	      For J:=2 To (T-Rows) Do DD[J]:=DD[J-1]+D[J];EndFor;
+	      MAXR:=Concat([A[I]| I In 1..(Rows+Codim-1)],[A[Rows+Codim-1+K]+DD[K]| K In 1..Len(DD)]);--the maximal row In the matrix;
+	      COUNT:=COUNT+1;
+	      If Type(COUNT/10000) = INT Then Print(COUNT," ");EndIf;
+	      If MAXR=Sorted(MAXR) Then
+		TEST:=1;
+		J:=0;
+		DM:=[MAXR| K In 1..Rows];
+		While TEST=1 And (J<Len(DD)) Do
+		  J:=J+1;
+		  ROW:=[MAXR[K]-DD[J]| K In 1..(T+Codim-1)];
+		  If (ROW[1]<0) And (ROW[Rows+J]>0) And (Not(0 IsIn ROW)) Then Append(DM,ROW);
+		  Else TEST:=0;
+		  EndIf;
+		EndWhile;	
+		If TEST=1 Then
+		  --Print(".");--PrintLn(DD[1],"   ",HV(DM));
+		  Append(VECTS,[DD[1], HV(DM)]);
+		  --        Append(MATS,DM);
+		  --	Else Print("*");
+		EndIf;
+	      EndIf
+	    EndForeach;
+	  EndIf;
+	EndForeach;
+      EndFor;
+      Len(VECTS);
+      Print "DetVects_"+CD+"_"+TP+"_"+Len+":=" On FILE;
+      Print VECTS On FILE;
+      Print ";" On FILE;
+      Close(FILE);
+    EndFor;
+  EndFor;
+EndFor;
+------------------------------------------------------------------------
+------------------------------------------------------------------------
