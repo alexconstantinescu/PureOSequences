@@ -1,26 +1,44 @@
+///////////////////////////////////////////////////////////////////////////////
+//THE H-VECTOR OF A STANDARD DETERMINANTAL IDEAL DEPENDS ONLY ON THE DEGREES //
+//OF THE ENTRIES IN THE DEFINING HOMOGENEOUS MATRIX (THE t x (t+c-1) MATRIX  //
+//WHOSE MAXIMAL MINORS GENERATE THE CODIMENSION c IDEAL).                    //
+//                                                                           //
+//THIS FUNCTION COMPUTES THE H-VECTOR DIRECTLY FROM THE DEGREE MATRIX.       //
+//                                                                           //
+//A DEGREE MATRIX HAS: - WEAKLY INCREASING ROWS                              //
+//                     - WEAKLY DECREASING COLUMNS                           //
+//                     - POSITIVE ENTRIES ON THE DIAGONAL                    //
+//                     - NO ENTIES EQUAL TO ZERO                             //
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////implemented by Alexandru Constnatninescu For CoCoA-4.7///
+///////////////////////////////////////////////////////////////////////////////
 Define HV(DM);
   T:=Len(DM);
   C:=Len(DM[1])-T+1;
   L:=Indets();
   Y:=L[1];
-SS:=MakeSet([Sorted(A)|A In Tuples(0..(T-1),C-1)]);
-HP:=0;
-Foreach A In SS Do
-  AA:=[A[I]+I| I In 1..(C-1)];
-  BB:=[1| I In 1..(T+C-2)];
-  For J:=1 To (C-1) Do BB[AA[J]]:=0;EndFor;
-  FF:=Concat([T],NewList(T+C-2));
-  For I:=2 To (T+C-1) Do FF[I]:=FF[I-1]-BB[I-1];EndFor;
-  GG:=[[FF[I],T+C-I]| I In 1..(T+C-1)]; 
-  GRF:=NewList(C);
-  AAA:=Concat([0],AA,[T+C-1]);
-  For I:=1 To C Do GRF[I]:=[GG[J]| J In (AAA[I]+1)..AAA[I+1]];EndFor;
-  PP:=Concat([Sum([DM[D[1],D[2]]| D In GRF[1]])],[DM[J[1,1],J[1,2]]| J In Tail(GRF)]);
-  SH:=Flatten([[J| J In Tail(K)]|K In Tail(GRF)],1);
-  QQ:=Sum([DM[J[1],J[2]]|J In SH]);
-  X:=Y^(QQ)*(Product([Sum([Y^I| I In 0..(PP[J]-1)])| J In 1..C]));
-  HP:=HP+X;
-EndForeach;
-HV:=Reversed(Coefficients(HP));
-Return(HV);
+  SS:=MakeSet([Sorted(A)|A In Tuples(0..(T-1),C-1)]);
+  HP:=0;
+  Foreach A In SS Do
+    AA:=[A[I]+I| I In 1..(C-1)];
+    BB:=[1| I In 1..(T+C-2)];
+    For J:=1 To (C-1) Do BB[AA[J]]:=0;EndFor;
+    FF:=Concat([T],NewList(T+C-2));
+    For I:=2 To (T+C-1) Do FF[I]:=FF[I-1]-BB[I-1];EndFor;
+    GG:=[[FF[I],T+C-I]| I In 1..(T+C-1)]; 
+    GRF:=NewList(C);
+    AAA:=Concat([0],AA,[T+C-1]);
+    For I:=1 To C Do GRF[I]:=[GG[J]| J In (AAA[I]+1)..AAA[I+1]];EndFor;
+    PP:=Concat([Sum([DM[D[1],D[2]]| D In GRF[1]])],[DM[J[1,1],J[1,2]]| J In Tail(GRF)]);
+    SH:=Flatten([[J| J In Tail(K)]|K In Tail(GRF)],1);
+    QQ:=Sum([DM[J[1],J[2]]|J In SH]);
+    X:=Y^(QQ)*(Product([Sum([Y^I| I In 0..(PP[J]-1)])| J In 1..C]));
+    HP:=HP+X;
+  EndForeach;
+  HV:=Reversed(Coefficients(HP));
+  Return(HV);
 EndDefine;
+
+/////////////////////
+/////END OF FILE/////
+/////////////////////
