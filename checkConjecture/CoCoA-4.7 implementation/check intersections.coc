@@ -1,16 +1,27 @@
-Source "UsualFunctions.coc";
+//////////////////////////////////////////////////////////////////////////////
+// CHECKS IF H-VECTORS OF CERTAIN DETERMINANTAL VARIETES ARE PURE OSEQUNECES//
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////implemented by Alexandru Constnatninescu For CoCoA-4.7//
+//////////////////////////////////////////////////////////////////////////////
 
+//instructions: the files DetVects_C_T_D.coc And PureOSeq_C_T_D.coc have To be In the same folder as this file
+
+
+C:=4;//codimension (second entry)
+T:=4;//type (last entry)
+D:=8;//length
 
 For D:=8 To 12 Do
-  N:=Sprint(4);
+  C:=Sprint(C);
   T:=Sprint(4);
   D:=Sprint(D);
-  Source "DetVects_"+N+"_"+T+"_"+D+".coc";
-  Source "PureOSeq_"+N+"_"+T+"_"+D+".coc";
-  L1:=Var("DetVects_"+N+"_"+T+"_"+D);
-  L1:=[A[2]| A In L1];
-  L2:=Var("PureOSeq_"+N+"_"+T+"_"+D);
-  Print(Len(L1)," & ");
-  Print(Len(L2)," & ");
-  PrintLn("D = ",D,"   ",  Intersection(L1,L2)," h-vects: ",Len(L1),"   of length: ",Len(L1[1]),"     pure O-seq: ",Len(L2), "  of length: ",Len(L2[1]));
+  Source "DetVects_"+C+"_"+T+"_"+D+".coc";//file of candidates
+  Source "PureOSeq_"+C+"_"+T+"_"+D+".coc";//file of pure O-sequences
+  L1:=Var("DetVects_"+C+"_"+T+"_"+D);//list of candidates
+  L2:=Var("PureOSeq_"+C+"_"+T+"_"+D);//list of pure O-sequences
+  PrintLn("codimension: ",C,"  type: ",T,,"  length: ",D);
+  PrintLn("The intersection is: ",Intersection(L1,L2));
+  PrintLn("There are ",Len(L1)," candidates  and ",Len(L2),"  pure O-sequences");
+  PrintLn("Do the lists contain vectors of the same length? ",Len(L1[1])=Len(L2[1]));//extra check
+  PrintLn;
 EndFor;
